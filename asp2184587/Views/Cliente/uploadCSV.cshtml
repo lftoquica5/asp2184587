@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewBag.Title = "uploadCSV";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>uploadCSV</h2>
+
+<div class="card">
+    <div class="card-header">
+        <center> Cargar archivo CSV Cliente</center>
+    </div>
+    <div class="card-body">
+        <table class="display responsive nowrap" id="myTable" style="width:100%">
+            <thead>
+
+                @using (Html.BeginForm("uploadCSV", "cliente", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+
+    <center> <input type="file" name="fileForm" /></center>
+
+
+                    <center><input class="btn btn-danger" type="submit" value="Enviar" /></center>}
+
+            </thead>
+        </table>
+    </div>
+</div>
+<br />
+<br />
+<br />
+<div>
+    <a class="btn btn-primary" href="/cliente/Index">Volver a la lista <span class="glyphicon glyphicon-hand-left"></span></a>
+
+</div>

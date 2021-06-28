@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using asp2184587.Models;
+using System.Web.Routing;
 
 namespace asp2184587.Controllers
 {
@@ -57,7 +58,13 @@ namespace asp2184587.Controllers
                 return View();
             }
         }
-
+        public ActionResult ListarUsuario()
+        {
+            using (var db = new inventarioEntities())
+            {
+                return PartialView(db.usuario.ToList());
+            }
+        }
 
         //encriptar contraseñas
         public static string HashSHA1(string value)
@@ -156,6 +163,25 @@ namespace asp2184587.Controllers
             return View();
         }
 
-    }
+        //public ActionResult PaginadorIndex(int pagina = 1)
+        //{
+        //    var cantidadRegistros = 5;
+        //    using (var db = new inventarioEntities())
+        //    {
+        //        var usuarios = db.usuario.OrderBy(x => x.id).Skip((pagina - 1) * cantidadRegistros)
+        //            .Take(cantidadRegistros).ToList();
 
+        //        var totalRegistros = db.usuario.Count();
+        //        var modelo = new UsuarioIndex();
+        //        modelo.Usuarios = usuarios;
+        //        modelo.ActualPage = pagina;
+        //        modelo.Total = totalRegistros;
+        //        modelo.RecordsPage = cantidadRegistros;
+        //        modelo.ValuesQueryString = new RouteValueDictionary();
+
+        //        return View(modelo);
+        //    }
+        //}
+    }
 }
+

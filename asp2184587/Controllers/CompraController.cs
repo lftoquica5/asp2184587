@@ -1,55 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using asp2184587.Models;
+using System.IO;
+
+
 namespace asp2184587.Controllers
 {
     public class CompraController : Controller
     {
+        private inventarioEntities db = new inventarioEntities();
         // GET: Compra
         public ActionResult Index()
         {
-            using (var db = new inventarioEntities())
-            {
-                return View(db.compra.ToList());
-            }
+            return View(db.compra.ToList());
         }
 
-        public static string nombreUsuario(int? idUsuario)
+        public ActionResult Details(int id)
         {
             using (var db = new inventarioEntities())
             {
-                return db.usuario.Find(idUsuario).nombre;
+                var findCompra = db.compra.Find(id);
+                return View(findCompra);
             }
+
         }
 
-        public ActionResult listarUsuarios()
-        {
-            using (var db = new inventarioEntities())
-            {
-                return PartialView(db.usuario.ToList());
-            }
-        }
-
-        public static string nombreCliente(int? idCliente)
-        {
-            using (var db = new inventarioEntities())
-            {
-                return db.cliente.Find(idCliente).nombre;
-            }
-        }
-
-        public ActionResult listarClientes()
-        {
-            using (var db = new inventarioEntities())
-            {
-                return PartialView(db.cliente.ToList());
-            }
-        }
-
+        // GET: Compra/Create
         public ActionResult Create()
         {
             return View();
@@ -57,86 +39,109 @@ namespace asp2184587.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(compra purchase)
+        public ActionResult Create(compra compra)
         {
             if (!ModelState.IsValid)
                 return View();
-
             try
             {
                 using (var db = new inventarioEntities())
                 {
-                    db.compra.Add(purchase);
+                    db.compra.Add(compra);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("index");
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", $"error {Ex}");
+                ModelState.AddModelError("", "error " + ex);
                 return View();
+            }
+        }
+
+        public ActionResult ListarUsuarios()
+        {
+            using (var db = new inventarioEntities())
+            {
+                return PartialView(db.usuario.ToList());
+            }
+        }
+
+        public ActionResult ListarCliente()
+        {
+            using (var db = new inventarioEntities())
+            {
+                return PartialView(db.cliente.ToList());
             }
         }
 
         public ActionResult Edit(int id)
         {
-            using (var db = new inventarioEntities())
+            try
             {
-                var productoEdit = db.compra.Where(a => a.id == id).FirstOrDefault();
-                return View(productoEdit);
+                using (var db = new inventarioEntities())
+                {
+                    compra findCompra = db.compra.Where(a => a.id == id).FirstOrDefault();
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "error " + ex);
+                return View();
             }
         }
 
+
+        // POST: Compra/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-
-        public ActionResult Edit(compra purchaseEdit)
+        public ActionResult Edit(compra editCompra)
         {
             try
             {
                 using (var db = new inventarioEntities())
                 {
-                    var oldPurchase = db.compra.Find(purchaseEdit.id);
-                    oldPurchase.fecha = purchaseEdit.fecha;
-                    oldPurchase.total = purchaseEdit.total;
-                    oldPurchase.id_cliente = purchaseEdit.id_cliente;
-                    oldPurchase.id_usuario = purchaseEdit.id_usuario;
+                    compra compra = db.compra.Find(editCompra.id);
+                    compra.fecha = editCompra.fecha;
+                    compra.total = editCompra.total;
+                    compra.id_usuario = editCompra.id_usuario;
+                    compra.id_cliente = editCompra.id_cliente;
+
+                    db.SaveChanges();
 
                     return RedirectToAction("Index");
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", $"error{Ex}");
+                ModelState.AddModelError("", "error " + ex);
                 return View();
             }
         }
 
-        public ActionResult Details(int id)
-        {
-            using (var db = new inventarioEntities())
-            {
-                return View(db.compra.Find(id));
-            }
-        }
-
+        // GET: Compra/Delete/5
         public ActionResult Delete(int id)
         {
             try
             {
                 using (var db = new inventarioEntities())
                 {
-                    var compra = db.compra.Find(id);
-                    db.compra.Remove(compra);
+                    var findCompra = db.compra.Find(id);
+                    db.compra.Remove(findCompra);
                     db.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("index");
                 }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("", $"error {Ex}");
+                ModelState.AddModelError("", "error " + ex);
                 return View();
             }
+
+
         }
+
     }
+
 }

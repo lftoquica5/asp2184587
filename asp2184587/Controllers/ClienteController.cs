@@ -1,131 +1,214 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Rotativa;
 using asp2184587.Models;
+
 
 namespace asp2184587.Controllers
 {
     public class ClienteController : Controller
     {
-        // GET: Cliente
+        private inventarioEntities db = new inventarioEntities();
+
+        // GET: clientes
         public ActionResult Index()
         {
-            using (var db = new inventarioEntities())
-            {
-                return View(db.cliente.ToList());
-            }
+            return View(db.cliente.ToList());
         }
 
+        // GET: clientes/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            cliente cliente = db.cliente.Find(id);
+            if (cliente == null)
+            {
+                return HttpNotFound();
+            }
+            return View(cliente);
+        }
 
+        // GET: clientes/Create
         public ActionResult Create()
         {
             return View();
         }
 
+        // POST: clientes/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-
-        public ActionResult Create(cliente cliente)
+        public ActionResult Create([Bind(Include = "id,nombre,documento,email")] cliente cliente)
         {
-            if (!ModelState.IsValid)
-                return View();
-
-            try
+            if (ModelState.IsValid)
             {
-
-                using (var db = new inventarioEntities())
-                {
-                    db.cliente.Add(cliente);
-                    db.SaveChanges();
-                    return RedirectToAction("index");
-                }
+                db.cliente.Add(cliente);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
-            {
 
-                ModelState.AddModelError("", "error " + ex);
-                return View();
-            }
+            return View(cliente);
         }
 
-
-        public ActionResult Details(int id)
+        public ActionResult uploadCSV()
         {
-            using (var db = new inventarioEntities())
-            {
-                var findUser = db.cliente.Find(id);
-                return View(findUser);
-            }
+            return View();
         }
 
-
-        public ActionResult Edit(int id)
+        // GET: clientes/Edit/5
+        public ActionResult Edit(int? id)
         {
-            try
+            if (id == null)
             {
-                using (var db = new inventarioEntities())
-                {
-                    cliente findUser = db.cliente.Where(a => a.id == id).FirstOrDefault();
-                    return View(findUser);
-                }
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            catch (Exception ex)
+            cliente cliente = db.cliente.Find(id);
+            if (cliente == null)
             {
-                ModelState.AddModelError("", "error " + ex);
-                return View();
+                return HttpNotFound();
             }
+            return View(cliente);
         }
+
+        // POST: clientes/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(cliente editUser)
+        public ActionResult Edit([Bind(Include = "id,nombre,documento,email")] cliente cliente)
         {
-            try
+            if (ModelState.IsValid)
             {
-                using (var db = new inventarioEntities())
-                {
-                    cliente user = db.cliente.Find(editUser.id);
-
-                    user.nombre = editUser.nombre;
-                    user.documento = editUser.documento;
-                    user.email = editUser.email;
-
-                    db.SaveChanges();
-                    return RedirectToAction("index");
-                }
+                db.Entry(cliente).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
-            {
-
-                ModelState.AddModelError("", "error " + ex);
-                return View();
-            }
+            return View(cliente);
         }
 
-        public ActionResult Delete(int id)
+        // GET: clientes/Delete/5
+        public ActionResult Delete(int? id)
         {
-            try
+            if (id == null)
             {
-                using (var db = new inventarioEntities())
-                {
-                    var findUser = db.cliente.Find(id);
-                    db.cliente.Remove(findUser);
-                    db.SaveChanges();
-                    return RedirectToAction("index");
-                }
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            catch (Exception ex)
+            cliente cliente = db.cliente.Find(id);
+            if (cliente == null)
             {
-
-                ModelState.AddModelError("", "error " + ex);
-                return View();
+                return HttpNotFound();
             }
-
+            return View(cliente);
         }
 
+        // POST: clientes/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            cliente cliente = db.cliente.Find(id);
+            db.cliente.Remove(cliente);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
-    }
-}
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+  
+        [HttpPost]
+        public ActionResult uploadCSV(HttpPostedFileBase fileForm)
+        {
+            //string para guardar la ruta
+            string filePath = string.Empty;
+
+            //condicion para saber si llego o no el archivo
+            if (fileForm != null)
+            {
+                //ruta de la carpeta que caragara el archivo
+                string path = Server.MapPath("~/Uploads/");
+
+                //verificar si la ruta de la carpeta existe
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                //obtener el nombre del archivo
+                filePath = path + Path.GetFileName(fileForm.FileName);
+                //obtener la extension del archivo
+                string extension = Path.GetExtension(fileForm.FileName);
+
+                //guardando el archivo
+                fileForm.SaveAs(filePath);
+
+                string csvData = System.IO.File.ReadAllText(filePath);
+                foreach (string row in csvData.Split('\n'))
+                {
+                    if (!string.IsNullOrEmpty(row))
+                    {
+                        var newCliente = new cliente
+                        {
+                            nombre = row.Split(',')[0],
+                            documento = row.Split(',')[1],
+                            email = row.Split(',')[2]
+                         
+                        };
+
+                        using (var db = new inventarioEntities())
+                        {
+                            db.cliente.Add(newCliente);
+                            db.SaveChanges();
+
+                        }
+                    }
+                }
+
+            }
+            return View("");
+        }
+        public ActionResult ReporteCompra()
+        {
+            var db = new inventarioEntities();
+
+            var query = from tabCliente in db.cliente
+                        join tabCompra in db.compra on tabCliente.id equals tabCompra.id_cliente
+                        select new ReporteCompra
+                        {
+                            nombreCliente = tabCliente.nombre,
+                            documentoCliente = tabCliente.documento,
+                            fechaCompra = tabCompra.fecha,
+                            total = tabCompra.total,
+                        };
+            return View(query);
+        }
+
+        public ActionResult ImprimirReporte1()
+        {
+            return new ActionAsPdf("ReporteCompra") { FileName = "ReporteCompra.pdf" };
+        }
+
+    } 
+
+}   
+
+
+
 

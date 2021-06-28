@@ -10,27 +10,37 @@ namespace asp2184587.Controllers
 {
     public class ProductoCompraController : Controller
     {
-        // GET: ProductoCompra
         public ActionResult Index()
         {
-            using (var db = new inventarioEntities())
+            using (inventarioEntities db = new inventarioEntities())
             {
                 return View(db.producto_compra.ToList());
             }
         }
 
-        public ActionResult ListarCompra()
+        // GET: ProductoCompra/Details/5
+        public ActionResult Details(int id)
         {
             using (var db = new inventarioEntities())
             {
-                return PartialView(db.compra.ToList());
+                var findProduct = db.producto_compra.Find(id);
+                return View(findProduct);
             }
         }
-        public ActionResult ListarProducto()
+
+        public ActionResult listarProductos()
         {
-            using (var db = new inventarioEntities())
+            using (inventarioEntities db = new inventarioEntities())
             {
                 return PartialView(db.producto.ToList());
+            }
+        }
+
+        public ActionResult listarCompras()
+        {
+            using (inventarioEntities db = new inventarioEntities())
+            {
+                return PartialView(db.compra.ToList());
             }
         }
 
@@ -42,50 +52,35 @@ namespace asp2184587.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public ActionResult Create(producto_compra producto_compra)
+        public ActionResult Create(producto_compra producto_Compra)
         {
             if (!ModelState.IsValid)
                 return View();
 
             try
             {
-
-                using (var db = new inventarioEntities())
+                using (inventarioEntities db = new inventarioEntities())
                 {
-                    db.producto_compra.Add(producto_compra);
-                    _ = db.SaveChanges();
-                    return RedirectToAction("index");
+                    db.producto_compra.Add(producto_Compra);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)
             {
-
                 ModelState.AddModelError("", "error " + ex);
                 return View();
-
             }
         }
-
-        public ActionResult Details(int id)
-        {
-            using (var db = new inventarioEntities())
-            {
-                var producto_compra = db.producto_compra.Find(id);
-                return View(producto_compra);
-            }
-        }
-
 
         public ActionResult Edit(int id)
         {
             try
             {
-                using (var db = new inventarioEntities())
+                using (inventarioEntities db = new inventarioEntities())
                 {
-                    producto producto_compraEdit = db.producto.Where(a => a.id == id).FirstOrDefault();
-                    return View(producto_compraEdit);
-
-
+                    producto_compra findProductBuy = db.producto_compra.Where(a => a.id == id).FirstOrDefault();
+                    return View();
                 }
             }
             catch (Exception ex)
@@ -94,29 +89,28 @@ namespace asp2184587.Controllers
                 return View();
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(producto_compra producto_compraEdit)
+
+        public ActionResult Edit(producto_compra editProducto_compra)
         {
             try
             {
-                using (var db = new inventarioEntities())
+                using (inventarioEntities db = new inventarioEntities())
                 {
-                    producto_compra oldproduct = db.producto_compra.Find(producto_compraEdit.id);
+                    producto_compra producto_compra = db.producto_compra.Find(editProducto_compra.id);
+                    producto_compra.id_compra = editProducto_compra.id_compra;
+                    producto_compra.id_producto = editProducto_compra.id_producto;
+                    producto_compra.cantidad = editProducto_compra.cantidad;
+
                     db.SaveChanges();
 
-                    oldproduct.id_compra = producto_compraEdit.id_compra;
-                    oldproduct.id_producto = producto_compraEdit.id_producto;
-                    oldproduct.cantidad = producto_compraEdit.cantidad;
-
-
-
-                    return RedirectToAction("index");
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)
             {
-
                 ModelState.AddModelError("", "error " + ex);
                 return View();
             }
@@ -126,23 +120,21 @@ namespace asp2184587.Controllers
         {
             try
             {
-                using (var db = new inventarioEntities())
+                using (inventarioEntities db = new inventarioEntities())
                 {
-                    var producto_compra = db.producto_compra.Find(id);
-                    db.producto_compra.Remove(producto_compra);
+                    var findProductoCompra = db.producto_compra.Find(id);
+                    db.producto_compra.Remove(findProductoCompra);
                     db.SaveChanges();
-                    return RedirectToAction("index");
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)
             {
-
                 ModelState.AddModelError("", "error " + ex);
                 return View();
             }
-
         }
-
-
     }
 }
+
+

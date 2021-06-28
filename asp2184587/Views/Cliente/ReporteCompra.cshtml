@@ -1,0 +1,55 @@
+﻿@model IEnumerable<asp2184587.Models.ReporteCompra>
+
+@{
+    ViewBag.Title = "ReporteCompra";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Reporte Compra</h2>
+
+<div class="card-header">
+
+</div>
+<div class="card-body">
+    <table class="display responsive nowrap" id="myTable" style="width:100%">
+        <thead>
+            <table class="table">
+                <tr>
+                    <th>Fecha Compra</th>
+                    <th>Total Compra</th>
+                    <th>Cliente</th>
+                    <th>Numero de documento</th>
+
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.fechaCompra)</td>
+                        <td>@Html.DisplayFor(modelItem => item.total)</td>
+                        <td>@Html.DisplayFor(modelItem => item.nombreCliente)</td>
+                        <td>@Html.DisplayFor(modelItem => item.documentoCliente)</td>
+                    </tr>
+}
+            </table>
+
+        </thead>
+    </table>
+</div>
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<a class="btn btn-info" href="ImprimirReporte1">Descargar Reporte <span class="glyphicon glyphicon-save"></span></a>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>

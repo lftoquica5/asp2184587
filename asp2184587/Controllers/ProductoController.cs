@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Rotativa;
 using asp2184587.Models;
 
 namespace asp2184587.Controllers
@@ -134,6 +136,26 @@ namespace asp2184587.Controllers
             }
         }
 
+        public ActionResult ReporteCompra()
+        {
+            var db = new inventarioEntities();
+
+            var query = from tabCliente in db.cliente
+                        join tabCompra in db.compra on tabCliente.id equals tabCompra.id_cliente
+                        select new ReporteCompra
+                        {
+                            nombreCliente = tabCliente.nombre,
+                            documentoCliente = tabCliente.documento,
+                            fechaCompra = tabCompra.fecha,
+                            total = tabCompra.total,
+                        };
+            return View(query);
+        }
+
+        public ActionResult ImprimirReporte1()
+        {
+            return new ActionAsPdf("ReporteCompra") { FileName = "ReporteCompra.pdf" };
+        }
 
 
     }
