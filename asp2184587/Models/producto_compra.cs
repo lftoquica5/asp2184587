@@ -11,7 +11,8 @@ namespace asp2184587.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class producto_compra
     {
         public int id { get; set; }

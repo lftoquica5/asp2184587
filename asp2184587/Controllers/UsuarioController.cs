@@ -6,12 +6,15 @@ using System.Web;
 using System.Web.Mvc;
 using asp2184587.Models;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace asp2184587.Controllers
 {
     public class UsuarioController : Controller
     {
         // GET: Usuario
+       
+       
         public ActionResult Index()
         {
             using (var db = new inventarioEntities())
@@ -21,16 +24,14 @@ namespace asp2184587.Controllers
             }
 
         }
-
         public ActionResult Create()
         {
             return View();
         }
-        //los decradores son caraeristicas que se le pueden dar
-        //a los atributos o a los metodos
-
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public ActionResult Create(usuario usuario)
         {
             if (!ModelState.IsValid)
@@ -58,6 +59,7 @@ namespace asp2184587.Controllers
                 return View();
             }
         }
+   
         public ActionResult ListarUsuario()
         {
             using (var db = new inventarioEntities())
@@ -81,6 +83,7 @@ namespace asp2184587.Controllers
             return sb.ToString();
         }
 
+       
         public ActionResult Details(int id)
         {
             using (var db = new inventarioEntities())
@@ -90,6 +93,7 @@ namespace asp2184587.Controllers
             }
         }
 
+        
         public ActionResult Edit(int id)
         {
             try
@@ -137,6 +141,7 @@ namespace asp2184587.Controllers
             }
         }
 
+       
         public ActionResult Delete(int id)
         {
             try
@@ -158,30 +163,62 @@ namespace asp2184587.Controllers
 
         }
 
-        public ActionResult Login()
+        public ActionResult Login(string message = "")
         {
+            ViewBag.Message = message;
             return View();
         }
 
-        //public ActionResult PaginadorIndex(int pagina = 1)
-        //{
-        //    var cantidadRegistros = 5;
-        //    using (var db = new inventarioEntities())
-        //    {
-        //        var usuarios = db.usuario.OrderBy(x => x.id).Skip((pagina - 1) * cantidadRegistros)
-        //            .Take(cantidadRegistros).ToList();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(string user, string password)
+        {
+            string passEncrip = UsuarioController.HashSHA1(password);
+            using (var db = new inventarioEntities())
+            {
+                var userLogin = db.usuario.FirstOrDefault(e => e.email == user && e.password == passEncrip);
+                if (userLogin != null)
+                {
+                    FormsAuthentication.SetAuthCookie(userLogin.email, true);
+                    Session["User"] = userLogin;
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return Login("Verifique sus datos");
+                }
+            }
+        }
 
-        //        var totalRegistros = db.usuario.Count();
-        //        var modelo = new UsuarioIndex();
-        //        modelo.Usuarios = usuarios;
-        //        modelo.ActualPage = pagina;
-        //        modelo.Total = totalRegistros;
-        //        modelo.RecordsPage = cantidadRegistros;
-        //        modelo.ValuesQueryString = new RouteValueDictionary();
-
-        //        return View(modelo);
-        //    }
-        //}
+        public ActionResult CloseSession()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
     }
+
+
+    public ActionResult PaginadorIndex(int pagina = 1)
+    {
+        var cantidadRegistros = 5;
+        using (var db = new inventarioEntities())
+        {
+            var usuarios = db.usuario.OrderBy(x => x.id).Skip((pagina - 1) * cantidadRegistros)
+                .Take(cantidadRegistros).ToList();
+
+            var totalRegistros = db.usuario.Count();
+            var modelo = new UsuarioIndex();
+            modelo.Usuarios = usuarios;
+            modelo.ActualPage = pagina;
+            modelo.Total = totalRegistros;
+            modelo.RecordsPage = cantidadRegistros;
+            modelo.ValuesQueryString = new RouteValueDictionary();
+
+            return View(modelo);
+        }
+    }
+
 }
+
+
 

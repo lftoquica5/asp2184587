@@ -11,6 +11,7 @@ namespace asp2184587.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     
     public partial class cliente
     {
@@ -21,6 +22,7 @@ namespace asp2184587.Models
         }
     
         public int id { get; set; }
+        [Required]
         public string nombre { get; set; }
         public string documento { get; set; }
         public string email { get; set; }
