@@ -12,32 +12,26 @@ namespace asp2184587.Controllers
 {
     public class UsuarioController : Controller
     {
-        // GET: Usuario
-       
-       
         public ActionResult Index()
         {
             using (var db = new inventarioEntities())
             {
                 return View(db.usuario.ToList());
-
             }
-
         }
+
         public ActionResult Create()
         {
             return View();
         }
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
         public ActionResult Create(usuario usuario)
         {
             if (!ModelState.IsValid)
                 return View();
 
-            //para capturar errores
             try
             {
                 using (var db = new inventarioEntities())
@@ -46,29 +40,16 @@ namespace asp2184587.Controllers
                     db.usuario.Add(usuario);
                     db.SaveChanges();
                     return RedirectToAction("Index");
-
-
                 }
-
 
             }
             catch (Exception ex)
             {
-
-                ModelState.AddModelError("", "error" + ex);
+                ModelState.AddModelError("", "error " + ex);
                 return View();
             }
         }
-   
-        public ActionResult ListarUsuario()
-        {
-            using (var db = new inventarioEntities())
-            {
-                return PartialView(db.usuario.ToList());
-            }
-        }
 
-        //encriptar contraseñas
         public static string HashSHA1(string value)
         {
             var sha1 = System.Security.Cryptography.SHA1.Create();
@@ -78,12 +59,11 @@ namespace asp2184587.Controllers
             var sb = new StringBuilder();
             for (var i = 0; i < hash.Length; i++)
             {
-                sb.Append(hash[i].ToString("x2"));
+                sb.Append(hash[i].ToString("X2"));
             }
             return sb.ToString();
         }
 
-       
         public ActionResult Details(int id)
         {
             using (var db = new inventarioEntities())
@@ -93,9 +73,11 @@ namespace asp2184587.Controllers
             }
         }
 
-        
         public ActionResult Edit(int id)
         {
+            if (!ModelState.IsValid)
+                return View();
+
             try
             {
                 using (var db = new inventarioEntities())
@@ -103,16 +85,14 @@ namespace asp2184587.Controllers
                     usuario findUser = db.usuario.Where(a => a.id == id).FirstOrDefault();
                     return View(findUser);
                 }
-
-
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "error" + ex);
+                ModelState.AddModelError("", "error " + ex);
                 return View();
-
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(usuario editUser)
@@ -135,13 +115,11 @@ namespace asp2184587.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "error" + ex);
+                ModelState.AddModelError("", "error " + ex);
                 return View();
-
             }
         }
 
-       
         public ActionResult Delete(int id)
         {
             try
@@ -156,11 +134,14 @@ namespace asp2184587.Controllers
             }
             catch (Exception ex)
             {
-
-                ModelState.AddModelError("", "error" + ex);
+                ModelState.AddModelError("", "error " + ex);
                 return View();
             }
+        }
 
+        public ActionResult nuevoIndex()
+        {
+            return View();
         }
 
         public ActionResult Login(string message = "")
@@ -190,34 +171,34 @@ namespace asp2184587.Controllers
             }
         }
 
+        [Authorize]
         public ActionResult CloseSession()
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
         }
-    }
 
-
-    public ActionResult PaginadorIndex(int pagina = 1)
-    {
-        var cantidadRegistros = 5;
-        using (var db = new inventarioEntities())
+        public ActionResult PaginadorIndex(int pagina = 1)
         {
-            var usuarios = db.usuario.OrderBy(x => x.id).Skip((pagina - 1) * cantidadRegistros)
-                .Take(cantidadRegistros).ToList();
+            var cantidadRegistros = 5;
+            using (var db = new inventarioEntities())
+            {
+                var usuarios = db.usuario.OrderBy(x => x.id).Skip((pagina - 1) * cantidadRegistros)
+                    .Take(cantidadRegistros).ToList();
 
-            var totalRegistros = db.usuario.Count();
-            var modelo = new UsuarioIndex();
-            modelo.Usuarios = usuarios;
-            modelo.ActualPage = pagina;
-            modelo.Total = totalRegistros;
-            modelo.RecordsPage = cantidadRegistros;
-            modelo.ValuesQueryString = new RouteValueDictionary();
+                var totalRegistros = db.usuario.Count();
+                var modelo = new UsuarioIndex();
+                modelo.Usuarios = usuarios;
+                modelo.ActualPage = pagina;
+                modelo.Total = totalRegistros;
+                modelo.RecordsPage = cantidadRegistros;
+                modelo.ValuesQueryString = new RouteValueDictionary();
 
-            return View(modelo);
+                return View(modelo);
+            }
         }
-    }
 
+    }
 }
 
 

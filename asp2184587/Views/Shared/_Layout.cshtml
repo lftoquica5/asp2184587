@@ -25,29 +25,35 @@
                 @Html.ActionLink("Programacion 2184587", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <u1 class="nav navbar-nav>"
+                <u1> class="nav navbar-nav>"
                 </u1>
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Inicio", "Index", "Home")</li>
                     <li>@Html.ActionLink("Acerca de", "About", "Home")</li>
                     <li>@Html.ActionLink("Contacto", "Contact", "Home")</li>
                     <li>@Html.ActionLink("Iniciar Sesion", "Login", "Usuario")</li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Funciones
-                            <span class="caret"></span>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Usuario", "Index", "Usuario")</li>
+                        <li>@Html.ActionLink("Cerrar Sesion", "CloseSession", "Usuario")</li>
+                    }
 
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Productos", "Index", "Producto")</li>
-                            <li>@Html.ActionLink("Proveedores", "Index", "Proveedor")</li>
-                            <li>@Html.ActionLink("Usuarios", "Index", "Usuario")</li>
-                            <li>@Html.ActionLink("Clientes", "Index", "Cliente")</li>
-                            <li>@Html.ActionLink("Mi Carrito", "Index", "ProductoCompra")</li>
-                            <li>@Html.ActionLink("Compra", "Index", "Compra")</li>
-                        </ul>
-                    </li>
-                </ul>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Funciones
+                                <span class="caret"></span>
+
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Productos", "Index", "Producto")</li>
+                                <li>@Html.ActionLink("Proveedores", "Index", "Proveedor")</li>
+                                <li>@Html.ActionLink("Usuarios", "Index", "Usuario")</li>
+                                <li>@Html.ActionLink("Clientes", "Index", "Cliente")</li>
+                                <li>@Html.ActionLink("Mi Carrito", "Index", "ProductoCompra")</li>
+                                <li>@Html.ActionLink("Compra", "Index", "Compra")</li>
+                            </ul>
+                        </li>
+                    </ul>
             </div>
         </div>
     </div>

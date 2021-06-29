@@ -1,5 +1,6 @@
 ﻿@model asp2184587.Models.BaseModelo
 
+
 @{
     var cantidadPaginas = (int)Math.Ceiling((double)Model.Total / Model.RecordsPage);
 }
@@ -70,4 +71,3 @@
     @{Model.ValuesQueryString["pagina"] = cantidadPaginas; }
     <li>@Html.ActionLink("Ultima", null, Model.ValuesQueryString)</li>
 </ul>
-© 2021 GitHub, Inc.
