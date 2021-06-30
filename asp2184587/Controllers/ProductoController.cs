@@ -136,27 +136,30 @@ namespace asp2184587.Controllers
             }
         }
 
-        public ActionResult ReporteCompra()
+        public ActionResult reporte()
         {
             var db = new inventarioEntities();
-
-            var query = from tabCliente in db.cliente
-                        join tabCompra in db.compra on tabCliente.id equals tabCompra.id_cliente
-                        select new ReporteCompra
+            var query = from tabProvedor in db.proveedor
+                        join tabProducto in db.producto on tabProvedor.id equals tabProducto.id_proveedor
+                        select new reporte
                         {
-                            nombreCliente = tabCliente.nombre,
-                            documentoCliente = tabCliente.documento,
-                            fechaCompra = tabCompra.fecha,
-                            total = tabCompra.total,
+                            nombreProveedor = tabProvedor.nombre,
+                            telefonoProveedor = tabProvedor.telefono,
+                            direccionProveedor = tabProvedor.direccion,
+                            nombreProducto = tabProducto.nombre,
+                            precioProducto = tabProducto.percio_unitario
                         };
             return View(query);
         }
 
-        public ActionResult ImprimirReporte1()
+        public ActionResult ImprimirReporte()
         {
-            return new ActionAsPdf("ReporteCompra") { FileName = "ReporteCompra.pdf" };
+            return new ActionAsPdf("Reporte") { FileName = "Reporte.pdf" };
         }
 
 
     }
+
 }
+
+  
