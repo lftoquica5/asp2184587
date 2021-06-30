@@ -22,9 +22,13 @@ namespace asp2184587.Models
         }
     
         public int id { get; set; }
+        [Required]
         public Nullable<System.DateTime> fecha { get; set; }
+        [Required]
         public Nullable<int> total { get; set; }
+        [Required]
         public Nullable<int> id_usuario { get; set; }
+        [Required]
         public Nullable<int> id_cliente { get; set; }
     
         public virtual cliente cliente { get; set; }

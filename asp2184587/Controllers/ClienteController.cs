@@ -18,6 +18,7 @@ namespace asp2184587.Controllers
         private inventarioEntities db = new inventarioEntities();
 
         // GET: clientes
+       
         public ActionResult Index()
         {
             return View(db.cliente.ToList());

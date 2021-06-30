@@ -8,10 +8,12 @@ using asp2184587.Models;
 using System.Web.Routing;
 using System.Web.Security;
 
+
 namespace asp2184587.Controllers
 {
     public class UsuarioController : Controller
     {
+        
         public ActionResult Index()
         {
             using (var db = new inventarioEntities())

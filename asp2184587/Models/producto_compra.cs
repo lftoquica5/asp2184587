@@ -16,8 +16,11 @@ namespace asp2184587.Models
     public partial class producto_compra
     {
         public int id { get; set; }
+        [Required]
         public Nullable<int> id_compra { get; set; }
+        [Required]
         public Nullable<int> id_producto { get; set; }
+        [Required]
         public Nullable<int> cantidad { get; set; }
     
         public virtual compra compra { get; set; }
